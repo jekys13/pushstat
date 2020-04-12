@@ -122,7 +122,7 @@ do
 	ssh_connections=$(who | wc -l)
 	push_stat 'ssh_connections' $ssh_connections
 
-	if [ ! -z "$opt_ssl_domain" ] && [ ! -z "$opt_ssl_domain" ]
+	if [ ! -z "$opt_ssl_domain" ] && [ ! -z "$opt_ssl_port" ]
 	then
 		now_epoch=$( date +%s )
 		ssl_date=$(echo | openssl s_client -showcerts -connect "$opt_ssl_domain:$opt_ssl_port" 2>/dev/null | openssl x509 -inform pem -noout -enddate | cut -d "=" -f 2)
@@ -131,5 +131,8 @@ do
 		push_stat 'ssl_days' $ssl_days
 	fi
 
+	last_seen=$(date +%s)
+	push_stat 'last_seen' $last_seen
+
 	sleep $opt_interval
-done 
+done

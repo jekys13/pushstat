@@ -76,7 +76,7 @@ fi
 
 printQuestion 'Enter port for SSL certificate check (default: 443)'
 read ssl_port
-if [ -z "$ssl_domain" ]
+if [ -z "$ssl_port" ]
 then
     ssl_port='443'
 fi
