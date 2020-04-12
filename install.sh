@@ -67,6 +67,20 @@ then
     exit 1 
 fi
 
+printQuestion 'Enter domain for SSL certificate check (example: example.com)'
+read ssl_domain
+if [ -z "$ssl_domain" ]
+then
+    ssl_domain=''
+fi
+
+printQuestion 'Enter port for SSL certificate check (default: 443)'
+read ssl_port
+if [ -z "$ssl_domain" ]
+then
+    ssl_port='443'
+fi
+
 printQuestion 'Enter app folder (default: /var/www)'
 read app_path
 if [ -z "$app_path" ]
@@ -86,10 +100,12 @@ mkdir '/etc/pushstat'
 echo "prometheus_host=$prometheus_url" > '/etc/pushstat/config.ini'
 echo "prometheus_port=$prometheus_port" >> '/etc/pushstat/config.ini'
 echo "host_name=$host_name" >> '/etc/pushstat/config.ini'
+echo "ssl_domain=$ssl_domain" >> '/etc/pushstat/config.ini'
+echo "ssl_port=$ssl_port" >> '/etc/pushstat/config.ini'
 echo "app_path=$app_path" >> '/etc/pushstat/config.ini'
 echo "interval=$interval" >> '/etc/pushstat/config.ini'
 
-cp pushstat.sh /usr/local/bin/pushstat
-cp pushstat.service /etc/systemd/system/pushstat.service
+\cp pushstat.sh /usr/local/bin/pushstat
+\cp pushstat.service /etc/systemd/system/pushstat.service
 
 
