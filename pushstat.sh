@@ -34,7 +34,7 @@ push_stat() {
 	if [ $opt_test_mode = true ]; then
 		echo "$1: $2"
 	else
-		echo "$1 $2" | curl --data-binary @- "$opt_prometeus_host:$opt_prometeus_port$/metrics/job/pushgateway/instance/$opt_host_name"		
+		echo "$1 $2" | curl --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"		
 	fi
 }
 
