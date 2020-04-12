@@ -86,7 +86,7 @@ if [ -n "$opt_config" ]; then
 	opt_app_path=$(awk -F "=" '/app_path/ {print $2}' $opt_config)
 fi
 
-if [ -z "$opt_prometeus_host"] || [ -z "$opt_prometeus_port"] || [ -z "$opt_host_name"] || [ -z "$opt_interval"]
+if [ -z "$opt_prometeus_host" ] || [ -z "$opt_prometeus_port" ] || [ -z "$opt_host_name" ] || [ -z "$opt_interval" ]
 then
 	echo 'One of required params is empty'
 	exit 1

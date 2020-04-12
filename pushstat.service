@@ -3,7 +3,7 @@ Description=daemon for "pushstat.sh"
 After=network.target
 
 [Service]
-ExecStart=/usr/lib/bin/pushstat -c /etc/pushstat/config.ini
+ExecStart=/usr/local/bin/pushstat -c /etc/pushstat/config.ini
 Restart=always
 
 [Install]

@@ -89,7 +89,7 @@ echo "host_name=$host_name" >> '/etc/pushstat/config.ini'
 echo "app_path=$app_path" >> '/etc/pushstat/config.ini'
 echo "interval=$interval" >> '/etc/pushstat/config.ini'
 
-cp pushstat.sh /usr/lib/bin/pushstat
+cp pushstat.sh /usr/local/bin/pushstat
 cp pushstat.service /etc/systemd/system/pushstat.service
 
 
