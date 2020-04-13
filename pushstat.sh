@@ -39,18 +39,25 @@ usage () {
   echo "  Usage: $0 -n -h [-p] [-a] [-u] [-P] [-i] [-d] [-s] [-c] [-t]"
 }
 
+
+stats=''
+
+collect_stat() {
+	stats="$stats$1 $2\n"
+}
+
 push_stat() {
 	if [ $opt_test_mode = true ]; then
-		echo "$1: $2"
+		echo -e "$stats"
 	else
 		if [ -z "$opt_auth_user" ]
 		then
-			echo "$1 $2" | curl --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
+			echo -e "$stats" | curl --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
 		else
-			echo "$1 $2" | curl --user "$opt_auth_user:$opt_auth_pass" --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
+			echo -e "$stats" | curl --user "$opt_auth_user:$opt_auth_pass" --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
 		fi
-			
 	fi
+	stats=''
 }
 
 while [ $# -gt 0 ]; do
@@ -120,11 +127,11 @@ fi
 while :
 do
 	cpu_usage=$(ps axo %cpu | awk '{ sum+=$1 } END { printf "%.1f\n", sum }' | tail -n 1)
-	push_stat 'cpu_usage' $cpu_usage
+	collect_stat 'cpu_usage' $cpu_usage
 
 	memory_usage=$(free | awk '/Mem:/ {
-	              printf "%.1f", 100 - $4 / ($3 + $4) * 100}')
-	push_stat 'memory_usage' $memory_usage
+	              printf "%.1f", ($2 - $6) / ($2 * 0.01)}')
+	collect_stat 'memory_usage' $memory_usage
 
 	swap_usage=$(free |
 	        awk '/Swap/{ if (int($2) == 0) exit; printf "%.1f", $3 / $2 * 100.0 }')
@@ -132,13 +139,13 @@ do
 	then
 		swap_usage='0.0'
 	fi
-	push_stat 'swap_usage' $swap_usage
+	collect_stat 'swap_usage' $swap_usage
 
 	disk_usage=$(cd $opt_app_path && df . | awk '{if ($1 != "Filesystem") print $5}' | tr -d %)
-	push_stat 'disk_usage' $disk_usage
+	collect_stat 'disk_usage' $disk_usage
 
 	ssh_connections=$(who | wc -l)
-	push_stat 'ssh_connections' $ssh_connections
+	collect_stat 'ssh_connections' $ssh_connections
 
 	if [ ! -z "$opt_ssl_domain" ] && [ ! -z "$opt_ssl_port" ]
 	then
@@ -146,11 +153,12 @@ do
 		ssl_date=$(echo | openssl s_client -showcerts -connect "$opt_ssl_domain:$opt_ssl_port" 2>/dev/null | openssl x509 -inform pem -noout -enddate | cut -d "=" -f 2)
 		ssl_epoch=$( date -d "$ssl_date" +%s )
 		ssl_days="$(( ($ssl_epoch - $now_epoch) / (3600 * 24) ))"
-		push_stat 'ssl_days' $ssl_days
+		collect_stat 'ssl_days' $ssl_days
 	fi
 
 	last_seen=$(date +%s)
-	push_stat 'last_seen' $last_seen
+	collect_stat 'last_seen' $last_seen
+	push_stat
 
 	sleep $opt_interval
 done
