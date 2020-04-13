@@ -59,6 +59,31 @@ then
     prometheus_port='9091' 
 fi
 
+printQuestion 'Do you have basic auth on pushgateway address? (Y/n)'
+read has_basic_auth
+
+auth_user=''
+auth_pass=''
+
+if [[ "$has_basic_auth" =~ ^(y|Y)$ ]]
+then 
+    printQuestion 'Enter basic auth login:'
+    read auth_user
+    if [ -z "$auth_user" ]
+    then
+        printError "Auth login is required"
+        exit 1 
+    fi 
+
+    printQuestion 'Enter basic auth password:'
+    read auth_pass
+    if [ -z "$auth_pass" ]
+    then
+        printError "Auth password is required"
+        exit 1 
+    fi
+fi
+
 printQuestion 'Enter instance name'
 read host_name
 if [ -z "$host_name" ]
@@ -104,8 +129,22 @@ echo "ssl_domain=$ssl_domain" >> '/etc/pushstat/config.ini'
 echo "ssl_port=$ssl_port" >> '/etc/pushstat/config.ini'
 echo "app_path=$app_path" >> '/etc/pushstat/config.ini'
 echo "interval=$interval" >> '/etc/pushstat/config.ini'
+echo "auth_user=$auth_user" >> '/etc/pushstat/config.ini'
+echo "auth_pass=$auth_pass" >> '/etc/pushstat/config.ini'
 
 \cp pushstat.sh /usr/local/bin/pushstat
-\cp pushstat.service /etc/systemd/system/pushstat.service
+
+if [ -d "/etc/systemd" ]
+then
+    \cp systemd/pushstat.service /etc/systemd/system/pushstat.service
+    systemctl daemon-reload
+    systemctl pushstat enable
+    systemctl pushstat start
+else
+    \cp init.d/pushstat.sh /etc/init.d/pushstat
+    service pushstat start
+    update-rc.d pushstat defaults
+fi
+
 
 

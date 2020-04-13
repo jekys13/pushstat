@@ -18,6 +18,5 @@ Script collects:
 git clone https://github.com/jekys13/pushstat.git
 cd pushstat
 ./install.sh
-systemctl daemon-reload
-systemctl start pushstat
+service pushstat status
 ```
