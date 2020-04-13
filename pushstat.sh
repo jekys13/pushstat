@@ -47,7 +47,7 @@ push_stat() {
 		then
 			echo "$1 $2" | curl --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
 		else
-			echo "$1 $2" | curl --user "@opt_auth_user:@opt_auth_pass" --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
+			echo "$1 $2" | curl --user "$opt_auth_user:$opt_auth_pass" --data-binary @- "$opt_prometeus_host:$opt_prometeus_port/metrics/job/pushgateway/instance/$opt_host_name"	
 		fi
 			
 	fi
