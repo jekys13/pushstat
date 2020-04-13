@@ -138,8 +138,8 @@ if [ -d "/etc/systemd" ]
 then
     \cp systemd/pushstat.service /etc/systemd/system/pushstat.service
     systemctl daemon-reload
-    systemctl pushstat enable
-    systemctl pushstat start
+    systemctl enable pushstat
+    systemctl start pushstat 
 else
     \cp init.d/pushstat.sh /etc/init.d/pushstat
     service pushstat start
